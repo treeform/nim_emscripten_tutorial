@@ -56,7 +56,7 @@ Now the `Hello, world!` in the JS console.
 
 ### Step 1: Using Nim with Emscripten.
 
-Next lets try nim, lets look at the very simple [step1.nim](step1.nim):
+Next lets try nim, look at the very simple [step1.nim](step1.nim):
 ```nim
 echo "Hello World, from Nim."
 ```
@@ -66,7 +66,7 @@ Most of the work will be done but the [step1.nims](step1.nims) file:
 if defined(emscripten):
   # This path will only run if -d:emscripten is passed to nim.
 
-  --nimcache:tmp # Store intermediate files close by in ./tmp dir.
+  --nimcache:tmp # Store intermediate files close by in the ./tmp dir.
 
   --os:linux # Emscripten pretends to be linux.
   --cpu:i386 # Emscripten is 32bits.
@@ -84,7 +84,7 @@ if defined(emscripten):
   switch("passL", "-o basic.html --shell-file shell_minimal.html")
 ```
 
-Lets compiler it!
+Lets compile it!
 
 ```sh
 nim c -d:emscripten .\basic.nim
