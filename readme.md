@@ -17,6 +17,7 @@ Lets install `emcc` - the actual compiler we will be using.
 emsdk install latest
 emsdk activate latest
 emsdk_env.bat
+cd ..
 ```
 
 Ok lets compile the basic C program to make sure it works:
@@ -25,10 +26,10 @@ Ok lets compile the basic C program to make sure it works:
 emcc step0.c -o step0.html
 ```
 
-To view the files because of CORS we need to run a webserver. The easiest one to run is python (version 3):
+To view the files because of CORS and content type wasm we need to run a webserver. The easiest one to run is the included python (version 3):
 
 ```sh
-python -m http.server
+python .\serv.py
 ```
 
 Ok open a browser to that page:
@@ -145,6 +146,8 @@ Again see it work natively:
 nim c -r step3.nim
 ```
 
+![step3b](docs\step3a.png)
+
 Then compile it for the browser:
 ```sh
 nim c -d:emscripten step3.nim
@@ -153,3 +156,5 @@ nim c -d:emscripten step3.nim
 And see it run:
 
 It also handles resizing of window as well.
+
+![step3a](docs\step3b.png)

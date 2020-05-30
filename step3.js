@@ -1338,11 +1338,11 @@ function updateGlobalBufferAndViews(buf) {
 }
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 5261008,
+    STACK_BASE = 5261968,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 18128,
-    DYNAMIC_BASE = 5261008,
-    DYNAMICTOP_PTR = 17968;
+    STACK_MAX = 19088,
+    DYNAMIC_BASE = 5261968,
+    DYNAMICTOP_PTR = 18928;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1908,7 +1908,7 @@ var ASM_CONSTS = {
 
 
 
-// STATICTOP = STATIC_BASE + 17104;
+// STATICTOP = STATIC_BASE + 18064;
 /* global initializers */  __ATINIT__.push({ func: function() { ___wasm_call_ctors() } });
 
 
@@ -4423,7 +4423,7 @@ var ASM_CONSTS = {
     }
 
   function _emscripten_get_sbrk_ptr() {
-      return 17968;
+      return 18928;
     }
 
   function _emscripten_memcpy_big(dest, src, num) {
@@ -5502,15 +5502,214 @@ var ASM_CONSTS = {
             }
           }
         }
-      }};function _glClear(x0) { GLctx['clear'](x0) }
+      }};function _glAttachShader(program, shader) {
+      GLctx.attachShader(GL.programs[program],
+                              GL.shaders[shader]);
+    }
+
+  function _glBindBuffer(target, buffer) {
+  
+      if (target == 0x88EB /*GL_PIXEL_PACK_BUFFER*/) {
+        // In WebGL 2 glReadPixels entry point, we need to use a different WebGL 2 API function call when a buffer is bound to
+        // GL_PIXEL_PACK_BUFFER_BINDING point, so must keep track whether that binding point is non-null to know what is
+        // the proper API function to call.
+        GLctx.currentPixelPackBufferBinding = buffer;
+      } else if (target == 0x88EC /*GL_PIXEL_UNPACK_BUFFER*/) {
+        // In WebGL 2 gl(Compressed)Tex(Sub)Image[23]D entry points, we need to
+        // use a different WebGL 2 API function call when a buffer is bound to
+        // GL_PIXEL_UNPACK_BUFFER_BINDING point, so must keep track whether that
+        // binding point is non-null to know what is the proper API function to
+        // call.
+        GLctx.currentPixelUnpackBufferBinding = buffer;
+      }
+      GLctx.bindBuffer(target, GL.buffers[buffer]);
+    }
+
+  function _glBufferData(target, size, data, usage) {
+      if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
+        if (data) {
+          GLctx.bufferData(target, HEAPU8, usage, data, size);
+        } else {
+          GLctx.bufferData(target, size, usage);
+        }
+      } else {
+        // N.b. here first form specifies a heap subarray, second form an integer size, so the ?: code here is polymorphic. It is advised to avoid
+        // randomly mixing both uses in calling code, to avoid any potential JS engine JIT issues.
+        GLctx.bufferData(target, data ? HEAPU8.subarray(data, data+size) : size, usage);
+      }
+    }
+
+  function _glClear(x0) { GLctx['clear'](x0) }
 
   function _glClearColor(x0, x1, x2, x3) { GLctx['clearColor'](x0, x1, x2, x3) }
+
+  function _glCompileShader(shader) {
+      GLctx.compileShader(GL.shaders[shader]);
+    }
+
+  function _glCreateProgram() {
+      var id = GL.getNewId(GL.programs);
+      var program = GLctx.createProgram();
+      program.name = id;
+      GL.programs[id] = program;
+      return id;
+    }
+
+  function _glCreateShader(shaderType) {
+      var id = GL.getNewId(GL.shaders);
+      GL.shaders[id] = GLctx.createShader(shaderType);
+      return id;
+    }
+
+  function _glDrawArrays(mode, first, count) {
+  
+      GLctx.drawArrays(mode, first, count);
+  
+    }
+
+  function _glEnableVertexAttribArray(index) {
+      GLctx.enableVertexAttribArray(index);
+    }
+
+  
+  function __glGenObject(n, buffers, createFunction, objectTable
+      ) {
+      for (var i = 0; i < n; i++) {
+        var buffer = GLctx[createFunction]();
+        var id = buffer && GL.getNewId(objectTable);
+        if (buffer) {
+          buffer.name = id;
+          objectTable[id] = buffer;
+        } else {
+          GL.recordError(0x502 /* GL_INVALID_OPERATION */);
+        }
+        HEAP32[(((buffers)+(i*4))>>2)]=id;
+      }
+    }function _glGenBuffers(n, buffers) {
+      __glGenObject(n, buffers, 'createBuffer', GL.buffers
+        );
+    }
+
+  function _glGetAttribLocation(program, name) {
+      return GLctx.getAttribLocation(GL.programs[program], UTF8ToString(name));
+    }
 
   function _glGetError() {
       var error = GLctx.getError() || GL.lastError;
       GL.lastError = 0/*GL_NO_ERROR*/;
       return error;
     }
+
+  function _glGetShaderInfoLog(shader, maxLength, length, infoLog) {
+      var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
+      if (log === null) log = '(unknown error)';
+      var numBytesWrittenExclNull = (maxLength > 0 && infoLog) ? stringToUTF8(log, infoLog, maxLength) : 0;
+      if (length) HEAP32[((length)>>2)]=numBytesWrittenExclNull;
+    }
+
+  function _glGetShaderiv(shader, pname, p) {
+      if (!p) {
+        // GLES2 specification does not specify how to behave if p is a null pointer. Since calling this function does not make sense
+        // if p == null, issue a GL error to notify user about it.
+        GL.recordError(0x501 /* GL_INVALID_VALUE */);
+        return;
+      }
+      if (pname == 0x8B84) { // GL_INFO_LOG_LENGTH
+        var log = GLctx.getShaderInfoLog(GL.shaders[shader]);
+        if (log === null) log = '(unknown error)';
+        HEAP32[((p)>>2)]=log.length + 1;
+      } else if (pname == 0x8B88) { // GL_SHADER_SOURCE_LENGTH
+        var source = GLctx.getShaderSource(GL.shaders[shader]);
+        var sourceLength = (source === null || source.length == 0) ? 0 : source.length + 1;
+        HEAP32[((p)>>2)]=sourceLength;
+      } else {
+        HEAP32[((p)>>2)]=GLctx.getShaderParameter(GL.shaders[shader], pname);
+      }
+    }
+
+  
+  /** @suppress {checkTypes} */
+  function jstoi_q(str) {
+      return parseInt(str);
+    }function _glGetUniformLocation(program, name) {
+      name = UTF8ToString(name);
+  
+      var arrayIndex = 0;
+      // If user passed an array accessor "[index]", parse the array index off the accessor.
+      if (name[name.length - 1] == ']') {
+        var leftBrace = name.lastIndexOf('[');
+        arrayIndex = name[leftBrace+1] != ']' ? jstoi_q(name.slice(leftBrace + 1)) : 0; // "index]", parseInt will ignore the ']' at the end; but treat "foo[]" as "foo[0]"
+        name = name.slice(0, leftBrace);
+      }
+  
+      var uniformInfo = GL.programInfos[program] && GL.programInfos[program].uniforms[name]; // returns pair [ dimension_of_uniform_array, uniform_location ]
+      if (uniformInfo && arrayIndex >= 0 && arrayIndex < uniformInfo[0]) { // Check if user asked for an out-of-bounds element, i.e. for 'vec4 colors[3];' user could ask for 'colors[10]' which should return -1.
+        return uniformInfo[1] + arrayIndex;
+      } else {
+        return -1;
+      }
+    }
+
+  function _glLinkProgram(program) {
+      GLctx.linkProgram(GL.programs[program]);
+      GL.populateUniformTable(program);
+    }
+
+  function _glShaderSource(shader, count, string, length) {
+      var source = GL.getSource(shader, count, string, length);
+  
+  
+      GLctx.shaderSource(GL.shaders[shader], source);
+    }
+
+  function _glUniformMatrix4fv(location, count, transpose, value) {
+  
+      if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
+        GLctx.uniformMatrix4fv(GL.uniforms[location], !!transpose, HEAPF32, value>>2, count*16);
+        return;
+      }
+  
+      if (16*count <= GL.MINI_TEMP_BUFFER_SIZE) {
+        // avoid allocation when uploading few enough uniforms
+        var view = GL.miniTempBufferFloatViews[16*count-1];
+        // hoist the heap out of the loop for size and for pthreads+growth.
+        var heap = HEAPF32;
+        value >>= 2;
+        for (var i = 0; i < 16 * count; i += 16) {
+          var dst = value + i;
+          view[i] = heap[dst];
+          view[i + 1] = heap[dst + 1];
+          view[i + 2] = heap[dst + 2];
+          view[i + 3] = heap[dst + 3];
+          view[i + 4] = heap[dst + 4];
+          view[i + 5] = heap[dst + 5];
+          view[i + 6] = heap[dst + 6];
+          view[i + 7] = heap[dst + 7];
+          view[i + 8] = heap[dst + 8];
+          view[i + 9] = heap[dst + 9];
+          view[i + 10] = heap[dst + 10];
+          view[i + 11] = heap[dst + 11];
+          view[i + 12] = heap[dst + 12];
+          view[i + 13] = heap[dst + 13];
+          view[i + 14] = heap[dst + 14];
+          view[i + 15] = heap[dst + 15];
+        }
+      } else
+      {
+        var view = HEAPF32.subarray((value)>>2,(value+count*64)>>2);
+      }
+      GLctx.uniformMatrix4fv(GL.uniforms[location], !!transpose, view);
+    }
+
+  function _glUseProgram(program) {
+      GLctx.useProgram(GL.programs[program]);
+    }
+
+  function _glVertexAttribPointer(index, size, type, normalized, stride, ptr) {
+      GLctx.vertexAttribPointer(index, size, type, !!normalized, stride, ptr);
+    }
+
+  function _glViewport(x0, x1, x2, x3) { GLctx['viewport'](x0, x1, x2, x3) }
 
   
   
@@ -6264,8 +6463,22 @@ var ASM_CONSTS = {
       return GLFW.createWindow(width, height, title, monitor, share);
     }
 
-  function _glfwGetKey(winid, key) {
-      return GLFW.getKey(winid, key);
+  function _glfwGetFramebufferSize(winid, width, height) {
+      var ww = 0;
+      var wh = 0;
+  
+      var win = GLFW.WindowFromId(winid);
+      if (win) {
+        ww = win.width;
+        wh = win.height;
+      }
+  
+      setValue(width, ww, 'i32');
+      setValue(height, wh, 'i32');
+    }
+
+  function _glfwGetTime() {
+      return GLFW.getTime() - GLFW.initialTime;
     }
 
   function _glfwInit() {
@@ -6314,12 +6527,6 @@ var ASM_CONSTS = {
       return prevcbfun;
     }
 
-  function _glfwSetWindowShouldClose(winid, value) {
-      var win = GLFW.WindowFromId(winid);
-      if (!win) return;
-      win.shouldClose = value;
-    }
-
   function _glfwSwapBuffers(winid) {
       GLFW.swapBuffers(winid);
     }
@@ -6336,6 +6543,41 @@ var ASM_CONSTS = {
         err('Calling stub instead of signal()');
       }
       return 0;
+    }
+
+  function _tzset() {
+      // TODO: Use (malleable) environment variables instead of system settings.
+      if (_tzset.called) return;
+      _tzset.called = true;
+  
+      // timezone is specified as seconds west of UTC ("The external variable
+      // `timezone` shall be set to the difference, in seconds, between
+      // Coordinated Universal Time (UTC) and local standard time."), the same
+      // as returned by getTimezoneOffset().
+      // See http://pubs.opengroup.org/onlinepubs/009695399/functions/tzset.html
+      HEAP32[((__get_timezone())>>2)]=(new Date()).getTimezoneOffset() * 60;
+  
+      var currentYear = new Date().getFullYear();
+      var winter = new Date(currentYear, 0, 1);
+      var summer = new Date(currentYear, 6, 1);
+      HEAP32[((__get_daylight())>>2)]=Number(winter.getTimezoneOffset() != summer.getTimezoneOffset());
+  
+      function extractZone(date) {
+        var match = date.toTimeString().match(/\(([A-Za-z ]+)\)$/);
+        return match ? match[1] : "GMT";
+      };
+      var winterName = extractZone(winter);
+      var summerName = extractZone(summer);
+      var winterNamePtr = allocateUTF8(winterName);
+      var summerNamePtr = allocateUTF8(summerName);
+      if (summer.getTimezoneOffset() < winter.getTimezoneOffset()) {
+        // Northern hemisphere
+        HEAP32[((__get_tzname())>>2)]=winterNamePtr;
+        HEAP32[(((__get_tzname())+(4))>>2)]=summerNamePtr;
+      } else {
+        HEAP32[((__get_tzname())>>2)]=summerNamePtr;
+        HEAP32[(((__get_tzname())+(4))>>2)]=winterNamePtr;
+      }
     }
 var FSNode = /** @constructor */ function(parent, name, mode, rdev) {
     if (!parent) {
@@ -6426,7 +6668,7 @@ function intArrayToString(array) {
 
 
 var asmGlobalArg = {};
-var asmLibraryArg = { "__handle_stack_overflow": ___handle_stack_overflow, "__sys_mmap2": ___sys_mmap2, "__sys_munmap": ___sys_munmap, "__wait": ___wait, "abort": _abort, "emscripten_get_sbrk_ptr": _emscripten_get_sbrk_ptr, "emscripten_memcpy_big": _emscripten_memcpy_big, "emscripten_resize_heap": _emscripten_resize_heap, "emscripten_set_main_loop": _emscripten_set_main_loop, "exit": _exit, "fd_close": _fd_close, "fd_seek": _fd_seek, "fd_write": _fd_write, "glClear": _glClear, "glClearColor": _glClearColor, "glGetError": _glGetError, "glfwCreateWindow": _glfwCreateWindow, "glfwGetKey": _glfwGetKey, "glfwInit": _glfwInit, "glfwMakeContextCurrent": _glfwMakeContextCurrent, "glfwPollEvents": _glfwPollEvents, "glfwSetFramebufferSizeCallback": _glfwSetFramebufferSizeCallback, "glfwSetWindowShouldClose": _glfwSetWindowShouldClose, "glfwSwapBuffers": _glfwSwapBuffers, "memory": wasmMemory, "setTempRet0": _setTempRet0, "signal": _signal, "table": wasmTable };
+var asmLibraryArg = { "__handle_stack_overflow": ___handle_stack_overflow, "__sys_mmap2": ___sys_mmap2, "__sys_munmap": ___sys_munmap, "__wait": ___wait, "abort": _abort, "emscripten_get_sbrk_ptr": _emscripten_get_sbrk_ptr, "emscripten_memcpy_big": _emscripten_memcpy_big, "emscripten_resize_heap": _emscripten_resize_heap, "emscripten_set_main_loop": _emscripten_set_main_loop, "exit": _exit, "fd_close": _fd_close, "fd_seek": _fd_seek, "fd_write": _fd_write, "glAttachShader": _glAttachShader, "glBindBuffer": _glBindBuffer, "glBufferData": _glBufferData, "glClear": _glClear, "glClearColor": _glClearColor, "glCompileShader": _glCompileShader, "glCreateProgram": _glCreateProgram, "glCreateShader": _glCreateShader, "glDrawArrays": _glDrawArrays, "glEnableVertexAttribArray": _glEnableVertexAttribArray, "glGenBuffers": _glGenBuffers, "glGetAttribLocation": _glGetAttribLocation, "glGetError": _glGetError, "glGetShaderInfoLog": _glGetShaderInfoLog, "glGetShaderiv": _glGetShaderiv, "glGetUniformLocation": _glGetUniformLocation, "glLinkProgram": _glLinkProgram, "glShaderSource": _glShaderSource, "glUniformMatrix4fv": _glUniformMatrix4fv, "glUseProgram": _glUseProgram, "glVertexAttribPointer": _glVertexAttribPointer, "glViewport": _glViewport, "glfwCreateWindow": _glfwCreateWindow, "glfwGetFramebufferSize": _glfwGetFramebufferSize, "glfwGetTime": _glfwGetTime, "glfwInit": _glfwInit, "glfwMakeContextCurrent": _glfwMakeContextCurrent, "glfwPollEvents": _glfwPollEvents, "glfwSetFramebufferSizeCallback": _glfwSetFramebufferSizeCallback, "glfwSwapBuffers": _glfwSwapBuffers, "memory": wasmMemory, "setTempRet0": _setTempRet0, "signal": _signal, "table": wasmTable, "tzset": _tzset };
 var asm = createWasm();
 Module["asm"] = asm;
 /** @type {function(...*):?} */
@@ -6462,6 +6704,27 @@ var ___errno_location = Module["___errno_location"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["__errno_location"].apply(null, arguments)
+};
+
+/** @type {function(...*):?} */
+var __get_tzname = Module["__get_tzname"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_get_tzname"].apply(null, arguments)
+};
+
+/** @type {function(...*):?} */
+var __get_daylight = Module["__get_daylight"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_get_daylight"].apply(null, arguments)
+};
+
+/** @type {function(...*):?} */
+var __get_timezone = Module["__get_timezone"] = function() {
+  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+  return Module["asm"]["_get_timezone"].apply(null, arguments)
 };
 
 /** @type {function(...*):?} */
