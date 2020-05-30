@@ -40,7 +40,7 @@ start http://localhost:8000/step0.html
 
 You should see the Emscripten default chrome:
 
-![step0.c with emscripten](docs\step0a.png)
+![step0.c with emscripten](imgs/step0a.png)
 
 Make sure you got the `Hello, world!` in the console.
 
@@ -50,7 +50,7 @@ To remove the ugly Emscripten default chrome, you need to use your own minimal h
 emcc step0.c -o step0.html --shell-file shell_minimal.html
 ```
 
-![step0.c with emscripten](docs\step0b.png)
+![step0.c with emscripten](imgs/step0b.png)
 
 Now the `Hello, world!` in the JS console.
 
@@ -96,7 +96,7 @@ Lets go to step1.html, this is how it should look:
 start http://localhost:8000/step0.html
 ```
 
-![step1](docs\step1.png)
+![step1](imgs/step1.png)
 
 Take note of the console output with `Hello World, from Nim.`.
 
@@ -114,7 +114,7 @@ First lets make sure it runs in normal native mode:
 nim c -r step2.nim
 ```
 
-![step2](docs\step2a.png)
+![step2](imgs/step2a.png)
 
 You should just see a window with changing background color.
 
@@ -132,7 +132,7 @@ Lets go take a look at step2.html
 start http://localhost:8000/step2.html
 ```
 
-![step2](docs\step2b.png)
+![step2](imgs/step2b.png)
 
 
 Again you should see red window with pulsating color.
@@ -147,7 +147,7 @@ Again see it work natively:
 nim c -r step3.nim
 ```
 
-![step3b](docs\step3a.png)
+![step3b](imgs/step3a.png)
 
 Then compile it for the browser:
 ```sh
@@ -156,4 +156,4 @@ nim c -d:emscripten step3.nim
 
 And see it run:
 
-![step3a](docs\step3b.png)
+![step3a](imgs/step3b.png)
