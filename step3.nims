@@ -16,4 +16,4 @@ if defined(emscripten):
   --exceptions:goto # Goto exceptions are friendlier with crazy platforms.
 
   # Pass this to Emscripten linker to generate html file scaffold for us.
-  switch("passL", "-o step3.html --shell-file shell_minimal.html")
+  switch("passL", "-o step3.html --preload-file data --shell-file shell_minimal.html")

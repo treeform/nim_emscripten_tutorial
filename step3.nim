@@ -8,27 +8,8 @@ var
     +0.6f, -0.4f, 0.0f, 1.0f, 0.0f,
     +0.0f, +0.6f, 0.0f, 0.0f, 1.0f
   ]
-
-  vertexShaderText = """
-uniform mat4 MVP;
-attribute vec3 vCol;
-attribute vec2 vPos;
-varying vec3 color;
-void main()
-{
-    gl_Position = MVP * vec4(vPos, 0.0, 1.0);
-    color = vCol;
-}
-"""
-
-  fragmentShaderText = """
-precision mediump float;
-varying vec3 color;
-void main()
-{
-    gl_FragColor = vec4(color, 1.0);
-}
-"""
+  vertexShaderText = readFile("data/vert.sh")
+  fragmentShaderText = readFile("data/frag.sh")
 
 proc checkError*(shader: GLuint) =
   var code: GLint

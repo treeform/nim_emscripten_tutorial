@@ -139,7 +139,8 @@ Again you should see red window with pulsating color.
 
 ### Step3: Nim with OpenGL Triangle.
 
-The [step3.nim](step3.nim) is more complex as it requires loading shaders and setting up a triangle to draw.
+The [step3.nim](step3.nim) is more complex as it requires loading shaders and setting up a triangle to draw. It also in includes a directory in a virtual files system:
+`--preload-file data` which generates a file called `step3.data` which is loaded right before a module is run. It also handles resizing of window as well.
 
 Again see it work natively:
 ```sh
@@ -154,7 +155,5 @@ nim c -d:emscripten step3.nim
 ```
 
 And see it run:
-
-It also handles resizing of window as well.
 
 ![step3a](docs\step3b.png)
