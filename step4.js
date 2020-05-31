@@ -196,7 +196,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     }
   
    }
-   loadPackage({"files": [{"filename": "/data/frag.sh", "start": 0, "end": 98, "audio": 0}, {"filename": "/data/IBMPlexSans-Regular.ttf", "start": 98, "end": 186458, "audio": 0}, {"filename": "/data/vert.sh", "start": 186458, "end": 186618, "audio": 0}], "remote_package_size": 186618, "package_uuid": "56316fc7-7c5a-4d77-9bec-8ebd70c3f66b"});
+   loadPackage({"files": [{"filename": "/data/frag.sh", "start": 0, "end": 98, "audio": 0}, {"filename": "/data/IBMPlexSans-Bold.ttf", "start": 98, "end": 186602, "audio": 0}, {"filename": "/data/IBMPlexSans-Regular.ttf", "start": 186602, "end": 372962, "audio": 0}, {"filename": "/data/vert.sh", "start": 372962, "end": 373122, "audio": 0}], "remote_package_size": 373122, "package_uuid": "a68eba9a-e36e-4460-a02a-31b3700503ec"});
   
   })();
   
@@ -895,8 +895,8 @@ var wasmMemory;
 // In the wasm backend, we polyfill the WebAssembly object,
 // so this creates a (non-native-wasm) table for us.
 var wasmTable = new WebAssembly.Table({
-  'initial': 156,
-  'maximum': 156 + 0,
+  'initial': 155,
+  'maximum': 155 + 0,
   'element': 'anyfunc'
 });
 
@@ -1517,11 +1517,11 @@ function updateGlobalBufferAndViews(buf) {
 }
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 5361136,
+    STACK_BASE = 5372208,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 118256,
-    DYNAMIC_BASE = 5361136,
-    DYNAMICTOP_PTR = 118096;
+    STACK_MAX = 129328,
+    DYNAMIC_BASE = 5372208,
+    DYNAMICTOP_PTR = 129168;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -2087,7 +2087,7 @@ var ASM_CONSTS = {
 
 
 
-// STATICTOP = STATIC_BASE + 117232;
+// STATICTOP = STATIC_BASE + 128304;
 /* global initializers */  __ATINIT__.push({ func: function() { ___wasm_call_ctors() } });
 
 
@@ -4773,7 +4773,7 @@ var ASM_CONSTS = {
     }
 
   function _emscripten_get_sbrk_ptr() {
-      return 118096;
+      return 129168;
     }
 
   function _emscripten_memcpy_big(dest, src, num) {
@@ -5913,7 +5913,7 @@ var ASM_CONSTS = {
       GLctx['bindVertexArray'](GL.vaos[vao]);
     }
 
-  function _glBlendFunc(x0, x1) { GLctx['blendFunc'](x0, x1) }
+  function _glBlendFuncSeparate(x0, x1, x2, x3) { GLctx['blendFuncSeparate'](x0, x1, x2, x3) }
 
   function _glBufferData(target, size, data, usage) {
       if (GL.currentContext.version >= 2) { // WebGL 2 provides new garbage-free entry points to call to WebGL. Use those always when possible.
@@ -7294,12 +7294,6 @@ var ASM_CONSTS = {
       GLFW.swapBuffers(winid);
     }
 
-  function _glfwSwapInterval(interval) {
-      interval = Math.abs(interval); // GLFW uses negative values to enable GLX_EXT_swap_control_tear, which we don't have, so just treat negative and positive the same.
-      if (interval == 0) _emscripten_set_main_loop_timing(0/*EM_TIMING_SETTIMEOUT*/, 0);
-      else _emscripten_set_main_loop_timing(1/*EM_TIMING_RAF*/, interval);
-    }
-
   function _glfwWindowHint(target, hint) {
       GLFW.hints[target] = hint;
     }
@@ -7340,16 +7334,6 @@ var ASM_CONSTS = {
 
   function _setTempRet0($i) {
       setTempRet0(($i) | 0);
-    }
-
-  
-  var __sigalrm_handler=0;function _signal(sig, func) {
-      if (sig == 14 /*SIGALRM*/) {
-        __sigalrm_handler = func;
-      } else {
-        err('Calling stub instead of signal()');
-      }
-      return 0;
     }
 
   function _tzset() {
@@ -7476,7 +7460,7 @@ function intArrayToString(array) {
 
 
 var asmGlobalArg = {};
-var asmLibraryArg = { "__handle_stack_overflow": ___handle_stack_overflow, "__sys_fcntl64": ___sys_fcntl64, "__sys_fstat64": ___sys_fstat64, "__sys_ioctl": ___sys_ioctl, "__sys_mmap2": ___sys_mmap2, "__sys_munmap": ___sys_munmap, "__sys_open": ___sys_open, "__sys_stat64": ___sys_stat64, "__wait": ___wait, "abort": _abort, "clock_gettime": _clock_gettime, "emscripten_get_sbrk_ptr": _emscripten_get_sbrk_ptr, "emscripten_memcpy_big": _emscripten_memcpy_big, "emscripten_resize_heap": _emscripten_resize_heap, "emscripten_set_main_loop": _emscripten_set_main_loop, "exit": _exit, "fd_close": _fd_close, "fd_fdstat_get": _fd_fdstat_get, "fd_read": _fd_read, "fd_seek": _fd_seek, "fd_write": _fd_write, "glActiveTexture": _glActiveTexture, "glAttachShader": _glAttachShader, "glBindBuffer": _glBindBuffer, "glBindFramebuffer": _glBindFramebuffer, "glBindTexture": _glBindTexture, "glBindVertexArray": _glBindVertexArray, "glBlendFunc": _glBlendFunc, "glBufferData": _glBufferData, "glCheckFramebufferStatus": _glCheckFramebufferStatus, "glClear": _glClear, "glClearColor": _glClearColor, "glCompileShader": _glCompileShader, "glCreateProgram": _glCreateProgram, "glCreateShader": _glCreateShader, "glDepthFunc": _glDepthFunc, "glDepthMask": _glDepthMask, "glDisable": _glDisable, "glDrawElements": _glDrawElements, "glEnable": _glEnable, "glEnableVertexAttribArray": _glEnableVertexAttribArray, "glFramebufferTexture2D": _glFramebufferTexture2D, "glGenBuffers": _glGenBuffers, "glGenFramebuffers": _glGenFramebuffers, "glGenTextures": _glGenTextures, "glGenVertexArrays": _glGenVertexArrays, "glGenerateMipmap": _glGenerateMipmap, "glGetActiveAttrib": _glGetActiveAttrib, "glGetActiveUniform": _glGetActiveUniform, "glGetAttribLocation": _glGetAttribLocation, "glGetError": _glGetError, "glGetProgramInfoLog": _glGetProgramInfoLog, "glGetProgramiv": _glGetProgramiv, "glGetShaderInfoLog": _glGetShaderInfoLog, "glGetShaderiv": _glGetShaderiv, "glGetString": _glGetString, "glGetUniformLocation": _glGetUniformLocation, "glLinkProgram": _glLinkProgram, "glShaderSource": _glShaderSource, "glTexImage2D": _glTexImage2D, "glTexParameteri": _glTexParameteri, "glTexSubImage2D": _glTexSubImage2D, "glUniform1f": _glUniform1f, "glUniform1i": _glUniform1i, "glUniform2f": _glUniform2f, "glUniform2i": _glUniform2i, "glUniform3f": _glUniform3f, "glUniform3i": _glUniform3i, "glUniform4f": _glUniform4f, "glUniform4i": _glUniform4i, "glUniformMatrix4fv": _glUniformMatrix4fv, "glUseProgram": _glUseProgram, "glVertexAttribIPointer": _glVertexAttribIPointer, "glVertexAttribPointer": _glVertexAttribPointer, "glViewport": _glViewport, "glfwCreateWindow": _glfwCreateWindow, "glfwGetClipboardString": _glfwGetClipboardString, "glfwGetCursorPos": _glfwGetCursorPos, "glfwGetFramebufferSize": _glfwGetFramebufferSize, "glfwGetMonitorPhysicalSize": _glfwGetMonitorPhysicalSize, "glfwGetPrimaryMonitor": _glfwGetPrimaryMonitor, "glfwGetVersionString": _glfwGetVersionString, "glfwGetVideoMode": _glfwGetVideoMode, "glfwGetWindowSize": _glfwGetWindowSize, "glfwInit": _glfwInit, "glfwMakeContextCurrent": _glfwMakeContextCurrent, "glfwPollEvents": _glfwPollEvents, "glfwSetCharCallback": _glfwSetCharCallback, "glfwSetClipboardString": _glfwSetClipboardString, "glfwSetCursorPosCallback": _glfwSetCursorPosCallback, "glfwSetFramebufferSizeCallback": _glfwSetFramebufferSizeCallback, "glfwSetKeyCallback": _glfwSetKeyCallback, "glfwSetMouseButtonCallback": _glfwSetMouseButtonCallback, "glfwSetScrollCallback": _glfwSetScrollCallback, "glfwSetWindowFocusCallback": _glfwSetWindowFocusCallback, "glfwSetWindowTitle": _glfwSetWindowTitle, "glfwSwapBuffers": _glfwSwapBuffers, "glfwSwapInterval": _glfwSwapInterval, "glfwWindowHint": _glfwWindowHint, "glfwWindowShouldClose": _glfwWindowShouldClose, "memory": wasmMemory, "nanosleep": _nanosleep, "setTempRet0": _setTempRet0, "signal": _signal, "table": wasmTable, "tzset": _tzset };
+var asmLibraryArg = { "__handle_stack_overflow": ___handle_stack_overflow, "__sys_fcntl64": ___sys_fcntl64, "__sys_fstat64": ___sys_fstat64, "__sys_ioctl": ___sys_ioctl, "__sys_mmap2": ___sys_mmap2, "__sys_munmap": ___sys_munmap, "__sys_open": ___sys_open, "__sys_stat64": ___sys_stat64, "__wait": ___wait, "abort": _abort, "clock_gettime": _clock_gettime, "emscripten_get_sbrk_ptr": _emscripten_get_sbrk_ptr, "emscripten_memcpy_big": _emscripten_memcpy_big, "emscripten_resize_heap": _emscripten_resize_heap, "emscripten_set_main_loop": _emscripten_set_main_loop, "exit": _exit, "fd_close": _fd_close, "fd_fdstat_get": _fd_fdstat_get, "fd_read": _fd_read, "fd_seek": _fd_seek, "fd_write": _fd_write, "glActiveTexture": _glActiveTexture, "glAttachShader": _glAttachShader, "glBindBuffer": _glBindBuffer, "glBindFramebuffer": _glBindFramebuffer, "glBindTexture": _glBindTexture, "glBindVertexArray": _glBindVertexArray, "glBlendFuncSeparate": _glBlendFuncSeparate, "glBufferData": _glBufferData, "glCheckFramebufferStatus": _glCheckFramebufferStatus, "glClear": _glClear, "glClearColor": _glClearColor, "glCompileShader": _glCompileShader, "glCreateProgram": _glCreateProgram, "glCreateShader": _glCreateShader, "glDepthFunc": _glDepthFunc, "glDepthMask": _glDepthMask, "glDisable": _glDisable, "glDrawElements": _glDrawElements, "glEnable": _glEnable, "glEnableVertexAttribArray": _glEnableVertexAttribArray, "glFramebufferTexture2D": _glFramebufferTexture2D, "glGenBuffers": _glGenBuffers, "glGenFramebuffers": _glGenFramebuffers, "glGenTextures": _glGenTextures, "glGenVertexArrays": _glGenVertexArrays, "glGenerateMipmap": _glGenerateMipmap, "glGetActiveAttrib": _glGetActiveAttrib, "glGetActiveUniform": _glGetActiveUniform, "glGetAttribLocation": _glGetAttribLocation, "glGetError": _glGetError, "glGetProgramInfoLog": _glGetProgramInfoLog, "glGetProgramiv": _glGetProgramiv, "glGetShaderInfoLog": _glGetShaderInfoLog, "glGetShaderiv": _glGetShaderiv, "glGetString": _glGetString, "glGetUniformLocation": _glGetUniformLocation, "glLinkProgram": _glLinkProgram, "glShaderSource": _glShaderSource, "glTexImage2D": _glTexImage2D, "glTexParameteri": _glTexParameteri, "glTexSubImage2D": _glTexSubImage2D, "glUniform1f": _glUniform1f, "glUniform1i": _glUniform1i, "glUniform2f": _glUniform2f, "glUniform2i": _glUniform2i, "glUniform3f": _glUniform3f, "glUniform3i": _glUniform3i, "glUniform4f": _glUniform4f, "glUniform4i": _glUniform4i, "glUniformMatrix4fv": _glUniformMatrix4fv, "glUseProgram": _glUseProgram, "glVertexAttribIPointer": _glVertexAttribIPointer, "glVertexAttribPointer": _glVertexAttribPointer, "glViewport": _glViewport, "glfwCreateWindow": _glfwCreateWindow, "glfwGetClipboardString": _glfwGetClipboardString, "glfwGetCursorPos": _glfwGetCursorPos, "glfwGetFramebufferSize": _glfwGetFramebufferSize, "glfwGetMonitorPhysicalSize": _glfwGetMonitorPhysicalSize, "glfwGetPrimaryMonitor": _glfwGetPrimaryMonitor, "glfwGetVersionString": _glfwGetVersionString, "glfwGetVideoMode": _glfwGetVideoMode, "glfwGetWindowSize": _glfwGetWindowSize, "glfwInit": _glfwInit, "glfwMakeContextCurrent": _glfwMakeContextCurrent, "glfwPollEvents": _glfwPollEvents, "glfwSetCharCallback": _glfwSetCharCallback, "glfwSetClipboardString": _glfwSetClipboardString, "glfwSetCursorPosCallback": _glfwSetCursorPosCallback, "glfwSetFramebufferSizeCallback": _glfwSetFramebufferSizeCallback, "glfwSetKeyCallback": _glfwSetKeyCallback, "glfwSetMouseButtonCallback": _glfwSetMouseButtonCallback, "glfwSetScrollCallback": _glfwSetScrollCallback, "glfwSetWindowFocusCallback": _glfwSetWindowFocusCallback, "glfwSetWindowTitle": _glfwSetWindowTitle, "glfwSwapBuffers": _glfwSwapBuffers, "glfwWindowHint": _glfwWindowHint, "glfwWindowShouldClose": _glfwWindowShouldClose, "memory": wasmMemory, "nanosleep": _nanosleep, "setTempRet0": _setTempRet0, "table": wasmTable, "tzset": _tzset };
 var asm = createWasm();
 Module["asm"] = asm;
 /** @type {function(...*):?} */

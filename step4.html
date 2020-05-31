@@ -5,15 +5,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
     <style>
-      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
       canvas.emscripten {
         border: none;
         background-color: white;
         position: absolute;
         left: 0px;
         right: 0px;
-        top: 0px;
-        bottom:0px;
+        outline: none;
       }
     </style>
   </head>
