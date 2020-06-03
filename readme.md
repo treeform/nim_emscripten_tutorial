@@ -26,10 +26,16 @@ Ok lets compile the basic C program to make sure it works:
 emcc step0.c -o step0.html
 ```
 
-To view the files because of CORS and content type wasm we need to run a webserver. The easiest one to run is the included python (version 3):
+To view the files because of CORS and content type wasm we need to run a webserver. The easiest one to run is the `nimhttpd`:
 
+To instal:
 ```sh
-python .\serv.py
+nimble install nimhttpd
+```
+
+To run:
+```sh
+nimhttpd -p:8000
 ```
 
 Ok open a browser to that page:
