@@ -2,9 +2,27 @@
 
 ### Step 0: Making sure Emscripten can compile C:
 
-Assumes windows 10 64bit.
+Assumes Windows 10 64bit.
 
-First clone the `emsdk` - is kind of like `choosenim` which will install the actual `emcc` compiler.
+First, install Python if it is not already installed.
+
+If you do not have Python installed, [get it here.](https://www.python.org/downloads/).
+
+Note: ensure you check the box to add Python to your PATH.
+
+After installing Python, [disable Windows 10's alias for Python](https://stackoverflow.com/questions/58754860/cmd-opens-window-store-when-i-type-python).
+
+```sh
+python --version
+```
+
+Should print this (or a newer version):
+
+```
+Python 3.8.3
+```
+
+Next, clone the `emsdk` - This is kind of like `choosenim` which will install the actual `emcc` compiler.
 
 ```sh
 git clone https://github.com/emscripten-core/emsdk.git
@@ -14,31 +32,39 @@ cd emsdk
 Lets install `emcc` - the actual compiler we will be using.
 
 ```sh
-emsdk install latest
-emsdk activate latest
-emsdk_env.bat
+./emsdk install latest
+./emsdk activate latest
+./emsdk_env.bat
 cd ..
 ```
 
-Ok lets compile the basic C program to make sure it works:
+After these commands run successfully (you should see some logs after each command), change directories into a clone of this repo and install the dependencies:
+
+```sh
+git clone https://github.com/treeform/nim_emscripten_tutorial
+cd nim_emscripten_tutorial
+nimble install
+```
+
+Now inside of the tutorial folder, lets compile a basic C program to make sure it works:
 
 ```sh
 emcc step0.c -o step0.html
 ```
 
-To view the files because of CORS and content type wasm we need to run a webserver. The easiest one to run is the `nimhttpd`:
+To view the files we need to run a webserver. The easiest one to run is the `nimhttpd`:
 
-To instal:
+To install:
 ```sh
 nimble install nimhttpd
 ```
 
-To run:
+To serve files, open a new shell window, move to the nim_emscripten_tutorial and run the webserver:
 ```sh
 nimhttpd -p:8000
 ```
 
-Ok open a browser to that page:
+Next, open a browser to the step0 page:
 
 ```sh
 start http://localhost:8000/step0.html
@@ -62,7 +88,7 @@ Now the `Hello, world!` in the JS console.
 
 ### Step 1: Using Nim with Emscripten.
 
-Next lets try nim, look at the very simple [step1.nim](step1.nim):
+Next lets try Nim, look at the very simple [step1.nim](step1.nim):
 ```nim
 echo "Hello World, from Nim."
 ```
@@ -76,7 +102,7 @@ if defined(emscripten):
 
   --os:linux # Emscripten pretends to be linux.
   --cpu:i386 # Emscripten is 32bits.
-  --cc:clang # Emscripten is very close to clang, so we ill replace it.
+  --cc:clang # Emscripten is very close to clang, so we will replace it.
   --clang.exe:emcc.bat  # Replace C
   --clang.linkerexe:emcc.bat # Replace C linker
   --clang.cpp.exe:emcc.bat # Replace C++
@@ -93,24 +119,24 @@ if defined(emscripten):
 Lets compile it!
 
 ```sh
-nim c -d:emscripten .\basic.nim
+nim c -d:emscripten .\step1.nim
 ```
 
 Lets go to step1.html, this is how it should look:
 
 ```sh
-start http://localhost:8000/step0.html
+start http://localhost:8000/step1.html
 ```
 
 ![step1](imgs/step1.png)
 
 Take note of the console output with `Hello World, from Nim.`.
 
-### Nim with openGL.
+### Nim with OpenGL.
 
-We can do a ton of stuff with just "console" programs, but what Emscripten is all bout is doing graphics. We can use normal openGL, and emscripten will convert it to webGL. We can also use normal SDL or GLFW windowing and input library and emscripten will convert it to HTML events for us. Emscripten also gives us a "fake" file system to load files from. Many things that would be missing from just having WASM running in the browser we get from free with Emscripten.
+We can do a ton of stuff with just "console" programs, but what Emscripten is all about is doing graphics. We can use normal OpenGL, and Emscripten will convert it to WebGL. We can also use normal SDL or GLFW windowing and input library and Emscripten will convert it to HTML events for us. Emscripten also gives us a "fake" file system to load files from. Many things that would be missing from just having WASM running in the browser we get from free with Emscripten.
 
-I will be using GLFW for my examples, GLFW is lighter weight then SDL with less bloated API. I will be using https://github.com/treeform/staticglfw because it has been made to work with emscripten.
+I will be using GLFW for my examples. I will be using https://github.com/treeform/staticglfw because it has been made to work with Emscripten.
 
 See: [step2.nim](step2.nim)
 
@@ -148,7 +174,7 @@ Again you should see red window with pulsating color.
 The [step3.nim](step3.nim) is more complex as it requires loading shaders and setting up a triangle to draw. It also in includes a directory in a virtual files system:
 `--preload-file data` which generates a file called `step3.data` which is loaded right before a module is run. It also handles resizing of window as well.
 
-Again see it work natively:
+Again see it run natively:
 ```sh
 nim c -r step3.nim
 ```
