@@ -20,6 +20,7 @@ if defined(emscripten):
 
   --gc:arc # GC:arc is friendlier with crazy platforms.
   --exceptions:goto # Goto exceptions are friendlier with crazy platforms.
+  --define:noSignalHandler # Emscripten doesn't support signal handlers.
 
   # Pass this to Emscripten linker to generate html file scaffold for us.
   switch("passL", "-o step1.html --shell-file shell_minimal.html")
