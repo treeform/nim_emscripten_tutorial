@@ -92,7 +92,7 @@ proc mainLoop() {.cdecl.} =
   mvp = m * p;
 
   glUseProgram(program)
-  var mvp_addr = cast[ptr GLFloat](addr mvp[0])
+  var mvp_addr = cast[ptr GLFloat](mvp.unsafeAddr)
   glUniformMatrix4fv(mvpLocation.GLint, 1, GL_FALSE, mvp_addr);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
