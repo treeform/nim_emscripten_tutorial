@@ -88,11 +88,12 @@ proc mainLoop() {.cdecl.} =
   glClear(GL_COLOR_BUFFER_BIT)
 
   m = rotateZ(getTime().float32)
-  p = ortho(-1, 1, 1, -1, -1000, 1000)
+  p = ortho[float32](-1, 1, 1, -1, -1000, 1000)
   mvp = m * p;
 
   glUseProgram(program)
-  glUniformMatrix4fv(mvpLocation.GLint, 1, GL_FALSE, addr mvp[0]);
+  var mvp_addr = cast[ptr GLFloat](mvp.unsafeAddr)
+  glUniformMatrix4fv(mvpLocation.GLint, 1, GL_FALSE, mvp_addr);
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
   # Swap buffers (this will display the red color)
