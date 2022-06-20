@@ -5,15 +5,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
     <style>
-      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
       canvas.emscripten {
         border: none;
         background-color: white;
         position: absolute;
         left: 0px;
         right: 0px;
-        top: 0px;
-        bottom:0px;
+        outline: none;
       }
     </style>
   </head>
@@ -66,6 +68,12 @@
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
           Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        },
+        onRuntimeInitialized: function() {
+          console.log('module loaded');
+          setTimeout(function() {
+            Module.setCanvasSize(window.innerWidth, window.innerHeight);
+          }, 0);
         }
       };
       Module.setStatus('Downloading...');
@@ -75,6 +83,11 @@
           if (text) Module.printErr('[post-exception status] ' + text);
         };
       };
+      window.onresize = function() {
+        var canvas = document.getElementById('canvas');
+        Module.setCanvasSize(window.innerWidth, window.innerHeight);
+      };
+
     </script>
     <script async type="text/javascript" src="step0.js"></script>
   </body>
