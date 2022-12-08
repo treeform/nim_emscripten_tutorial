@@ -64,7 +64,7 @@ To serve files, open a new shell window, move to the nim_emscripten_tutorial and
 nimhttpd -p:8000
 ```
 
-If compiling with threads then you need extra headers when serving (See [here for details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements))
+If compiling with threads then you need extra headers when serving the files (See [here for details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements))
 ```sh
 nimhttpd -H:"Cross-Origin-Opener-Policy: same-origin" -H:"Cross-Origin-Embedder-Policy: require-corp"
 ```
