@@ -64,6 +64,11 @@ To serve files, open a new shell window, move to the nim_emscripten_tutorial and
 nimhttpd -p:8000
 ```
 
+If compiling with threads then you need extra headers when serving (See [here for details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements))
+```sh
+nimhttpd -H:"Cross-Origin-Opener-Policy: same-origin" -H:"Cross-Origin-Embedder-Policy: require-corp"
+```
+
 Next, open a browser to the step0 page: http://localhost:8000/step0.html
 
 You should see the Emscripten default chrome:
@@ -109,6 +114,10 @@ if defined(emscripten):
     --clang.linkerexe:emcc # Replace C linker
     --clang.cpp.exe:emcc # Replace C++
     --clang.cpp.linkerexe:emcc # Replace C++ linker.
+  when compileOption("threads"):
+    # We can have a pool size to populate and be available on page run
+    # --passL:"-sPTHREAD_POOL_SIZE=2"
+    discard
   --listCmd # List what commands we are running so that we can debug them.
 
   --gc:arc # GC:arc is friendlier with crazy platforms.
@@ -117,7 +126,6 @@ if defined(emscripten):
 
   # Pass this to Emscripten linker to generate html file scaffold for us.
   switch("passL", "-o step1.html --shell-file shell_minimal.html")
-
 ```
 
 Lets compile it!
