@@ -64,6 +64,14 @@
             console.log(text);
           }
         },
+        setCanvasSize: function(width, height) {
+          var canvas = document.getElementById('canvas');
+          if (canvas.width !== width || canvas.height !== height) {
+            canvas.width = width;
+            canvas.height = height;
+            Module.setStatus('Canvas size set to ' + width + 'x' + height);
+          }
+        },
         totalDependencies: 0,
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
