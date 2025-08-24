@@ -1,8 +1,10 @@
 ## Nim Emscripten Tutorial for Windows.
 
-### Step 0: Making sure Emscripten can compile C:
+### Installing Emscripten:
 
-Assumes Windows 10 64bit.
+Depends on which operating system you are using you are going to have to do different things to install emscripten.
+
+#### Windows.
 
 First, install Python if it is not already installed.
 
@@ -38,7 +40,25 @@ Lets install `emcc` - the actual compiler we will be using.
 cd ..
 ```
 
-After these commands run successfully (you should see some logs after each command), change directories into a clone of this repo and install the dependencies:
+#### Macos
+
+Mac is much easier. We can use brew to install emscripten.
+
+```sh
+brew install emscripten
+```
+
+#### Linux
+
+Linux is also easy. We can use apt to install emscripten.
+
+```sh
+sudo apt install emscripten
+```
+
+### Step 0: Making sure Emscripten can compile C:
+
+After the installation is complete, change directories into a clone of this repo and install the dependencies:
 
 ```sh
 git clone https://github.com/treeform/nim_emscripten_tutorial
@@ -131,7 +151,7 @@ if defined(emscripten):
 Lets compile it!
 
 ```sh
-nim c -d:emscripten .\step1.nim
+nim c -d:emscripten step1.nim
 ```
 
 Lets go to step1.html, this is how it should look: http://localhost:8000/step1.html
@@ -151,8 +171,10 @@ See: [step2.nim](step2.nim)
 First lets make sure it runs in normal native mode:
 
 ```sh
-nim c -r step2.nim
+nim r step2.nim
 ```
+
+Because native mode is faster to compile and more performant, I recommend developing in native mode and then compiling to the browser for compatibility.
 
 ![step2](imgs/step2a.png)
 
@@ -180,7 +202,7 @@ The [step3.nim](step3.nim) is more complex as it requires loading shaders and se
 
 Again see it run natively:
 ```sh
-nim c -r step3.nim
+nim r step3.nim
 ```
 
 ![step3b](imgs/step3a.png)
