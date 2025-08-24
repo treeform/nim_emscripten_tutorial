@@ -1,7 +1,7 @@
-version     = "0.0.0"
+version     = "0.2.0"
 author      = "treeform"
-description = "Nim Emscripten tutorial for Windows 10."
+description = "Nim Emscripten tutorial."
 license     = "MIT"
 
-requires "nim >= 1.1.1"
-requires "fidget >= 0.4.1"
+requires "nim >= 2.2.4"
+requires "boxy >= 0.4.3"
