@@ -4,6 +4,7 @@ let window = newWindow("Step 4", ivec2(1280, 800))
 makeContextCurrent(window)
 
 when not defined(emscripten):
+  import opengl
   loadExtensions()
 
 let bxy = newBoxy()
@@ -37,11 +38,13 @@ window.onFrame = proc() =
   inc frame
 
 proc mainLoop() {.cdecl.} =
-  window.onFrame()
+  pollEvents()
+  if window.onFrame != nil:
+    window.onFrame()
 
 when defined(emscripten):
   # Emscripten can't block so it will call this callback instead.
   window.run(mainLoop)
 else:
   while not window.closeRequested:
-    pollEvents()
+    mainLoop()
