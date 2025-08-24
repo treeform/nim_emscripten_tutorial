@@ -1,7 +1,5 @@
 import math, opengl, windy
 
-proc emscripten_set_main_loop(f: proc() {.cdecl.}, a: cint, b: bool) {.importc.}
-
 # Open window.
 var window = newWindow("Windy Window", ivec2(800, 600))
 # Connect the GL context.
@@ -28,7 +26,7 @@ proc mainLoop() {.cdecl.} =
 
 when defined(emscripten):
   # Emscripten can't block so it will call this callback instead.
-  emscripten_set_main_loop(main_loop, 0, true);
+  window.run(mainLoop)
 else:
   # When running native code we can block in an infinite loop.
   while not window.closeRequested:
