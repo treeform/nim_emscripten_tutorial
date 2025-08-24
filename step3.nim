@@ -25,8 +25,6 @@ proc checkError*(shader: GLuint) =
     var log = newString(length.int)
     glGetShaderInfoLog(shader, length, nil, log.cstring);
     echo log
-  else:
-    echo "pass"
 
 # Open window.
 var window = newWindow("GLFW3 WINDOW", ivec2(800, 600))
@@ -68,8 +66,7 @@ var
   mvpLocation = glGetUniformLocation(program, "MVP").GLuint
   vposLocation = glGetAttribLocation(program, "vPos").GLuint
   vcolLocation = glGetAttribLocation(program, "vCol").GLuint
-echo mvpLocation
-echo vposLocation
+
 #echo vcolLocation
 glEnableVertexAttribArray(vposLocation);
 glVertexAttribPointer(vposLocation, 2.GLint, cGL_FLOAT, GL_FALSE, (5 * 4).GLsizei, nil)
@@ -79,7 +76,7 @@ glVertexAttribPointer(vcolLocation, 3.GLint, cGL_FLOAT, GL_FALSE, (5 * 4).GLsize
 var colorFade = 1.0
 var rotationAngle = 0.0f
 
-echo "Starting main loop"
+echo "Starting Step 3!"
 echo "  OpenGL version: ", cast[cstring](glGetString(GL_VERSION))
 echo "  OpenGL shader version: ", cast[cstring](glGetString(GL_SHADING_LANGUAGE_VERSION))
 

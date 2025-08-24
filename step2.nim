@@ -11,7 +11,10 @@ when not defined(emscripten):
 
 var colorFade = 1.0
 
-echo "Step 2 running with Windy!"
+echo "Starting Step 2!"
+echo "  OpenGL version: ", cast[cstring](glGetString(GL_VERSION))
+echo "  OpenGL shader version: ", cast[cstring](glGetString(GL_SHADING_LANGUAGE_VERSION))
+
 
 proc mainLoop() {.cdecl.} =
 
