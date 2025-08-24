@@ -46,7 +46,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpp_t6e0j8.js
+// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpe3z8tulc.js
 
   Module['expectedDataFileDownloads'] ??= 0;
   Module['expectedDataFileDownloads']++;
@@ -210,25 +210,25 @@ Module['FS_createPath']("/", "data", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/data/IBMPlexSans-Bold.ttf", "start": 0, "end": 186504}, {"filename": "/data/IBMPlexSans-Regular.ttf", "start": 186504, "end": 372864}, {"filename": "/data/frag.emscripten.sh", "start": 372864, "end": 372962}, {"filename": "/data/frag.sh", "start": 372962, "end": 373059}, {"filename": "/data/frag_webgl.sh", "start": 373059, "end": 373157}, {"filename": "/data/vert.emscripten.sh", "start": 373157, "end": 373342}, {"filename": "/data/vert.sh", "start": 373342, "end": 373496}, {"filename": "/data/vert_webgl.sh", "start": 373496, "end": 373681}], "remote_package_size": 373681});
+    loadPackage({"files": [{"filename": "/data/IBMPlexSans-Bold.ttf", "start": 0, "end": 186504}, {"filename": "/data/IBMPlexSans-Regular.ttf", "start": 186504, "end": 372864}, {"filename": "/data/frag.emscripten.sh", "start": 372864, "end": 372989}, {"filename": "/data/frag.sh", "start": 372989, "end": 373091}, {"filename": "/data/vert.emscripten.sh", "start": 373091, "end": 373273}, {"filename": "/data/vert.sh", "start": 373273, "end": 373432}], "remote_package_size": 373432});
 
   })();
 
-// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpp_t6e0j8.js
-// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp9mzfo74a.js
+// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpe3z8tulc.js
+// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpp2uvueau.js
 
     // All the pre-js content up to here must remain later on, we need to run
     // it.
     if ((typeof ENVIRONMENT_IS_WASM_WORKER != 'undefined' && ENVIRONMENT_IS_WASM_WORKER) || (typeof ENVIRONMENT_IS_PTHREAD != 'undefined' && ENVIRONMENT_IS_PTHREAD) || (typeof ENVIRONMENT_IS_AUDIO_WORKLET != 'undefined' && ENVIRONMENT_IS_AUDIO_WORKLET)) Module['preRun'] = [];
     var necessaryPreJSTasks = Module['preRun'].slice();
-  // end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp9mzfo74a.js
-// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp2y4yoekf.js
+  // end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpp2uvueau.js
+// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmphnnuigtm.js
 
     if (!Module['preRun']) throw 'Module.preRun should exist because file support used it; did a pre-js delete it?';
     necessaryPreJSTasks.forEach((task) => {
       if (Module['preRun'].indexOf(task) < 0) throw 'All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?';
     });
-  // end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp2y4yoekf.js
+  // end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmphnnuigtm.js
 
 
 var arguments_ = [];
@@ -6123,6 +6123,67 @@ async function createWasm() {
       }
     };
 
+  
+  
+  var stringToNewUTF8 = (str) => {
+      var size = lengthBytesUTF8(str) + 1;
+      var ret = _malloc(size);
+      if (ret) stringToUTF8(str, ret, size);
+      return ret;
+    };
+  
+  
+  var webglGetExtensions = () => {
+      var exts = getEmscriptenSupportedExtensions(GLctx);
+      exts = exts.concat(exts.map((e) => "GL_" + e));
+      return exts;
+    };
+  
+  var _glGetString = (name_) => {
+      var ret = GL.stringCache[name_];
+      if (!ret) {
+        switch (name_) {
+          case 0x1F03 /* GL_EXTENSIONS */:
+            ret = stringToNewUTF8(webglGetExtensions().join(' '));
+            break;
+          case 0x1F00 /* GL_VENDOR */:
+          case 0x1F01 /* GL_RENDERER */:
+          case 0x9245 /* UNMASKED_VENDOR_WEBGL */:
+          case 0x9246 /* UNMASKED_RENDERER_WEBGL */:
+            var s = GLctx.getParameter(name_);
+            if (!s) {
+              GL.recordError(0x500/*GL_INVALID_ENUM*/);
+            }
+            ret = s ? stringToNewUTF8(s) : 0;
+            break;
+  
+          case 0x1F02 /* GL_VERSION */:
+            var webGLVersion = GLctx.getParameter(0x1F02 /*GL_VERSION*/);
+            // return GLES version string corresponding to the version of the WebGL context
+            var glVersion = `OpenGL ES 2.0 (${webGLVersion})`;
+            if (GL.currentContext.version >= 2) glVersion = `OpenGL ES 3.0 (${webGLVersion})`;
+            ret = stringToNewUTF8(glVersion);
+            break;
+          case 0x8B8C /* GL_SHADING_LANGUAGE_VERSION */:
+            var glslVersion = GLctx.getParameter(0x8B8C /*GL_SHADING_LANGUAGE_VERSION*/);
+            // extract the version number 'N.M' from the string 'WebGL GLSL ES N.M ...'
+            var ver_re = /^WebGL GLSL ES ([0-9]\.[0-9][0-9]?)(?:$| .*)/;
+            var ver_num = glslVersion.match(ver_re);
+            if (ver_num !== null) {
+              if (ver_num[1].length == 3) ver_num[1] = ver_num[1] + '0'; // ensure minor version has 2 digits
+              glslVersion = `OpenGL ES GLSL ES ${ver_num[1]} (${glslVersion})`;
+            }
+            ret = stringToNewUTF8(glslVersion);
+            break;
+          default:
+            GL.recordError(0x500/*GL_INVALID_ENUM*/);
+            // fall through
+        }
+        GL.stringCache[name_] = ret;
+      }
+      return ret;
+    };
+
   /** @suppress {checkTypes} */
   var jstoi_q = (str) => parseInt(str);
   
@@ -6469,7 +6530,6 @@ if (Module['wasmBinary']) wasmBinary = Module['wasmBinary'];
   'UTF32ToString',
   'stringToUTF32',
   'lengthBytesUTF32',
-  'stringToNewUTF8',
   'writeArrayToMemory',
   'registerKeyEventCallback',
   'getBoundingClientRect',
@@ -6633,6 +6693,7 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'lengthBytesUTF8',
   'intArrayFromString',
   'UTF16Decoder',
+  'stringToNewUTF8',
   'stringToUTF8OnStack',
   'JSEvents',
   'specialHTMLTargets',
@@ -7009,6 +7070,8 @@ function assignWasmExports(wasmExports) {
     glGetShaderInfoLog: _glGetShaderInfoLog,
     /** @export */
     glGetShaderiv: _glGetShaderiv,
+    /** @export */
+    glGetString: _glGetString,
     /** @export */
     glGetUniformLocation: _glGetUniformLocation,
     /** @export */

@@ -1,4 +1,4 @@
-#version 150
+#version 410 core
 uniform mat4 MVP;
 in vec3 vCol;
 in vec2 vPos;

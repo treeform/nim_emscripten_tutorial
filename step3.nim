@@ -79,6 +79,10 @@ glVertexAttribPointer(vcolLocation, 3.GLint, cGL_FLOAT, GL_FALSE, (5 * 4).GLsize
 var colorFade = 1.0
 var rotationAngle = 0.0f
 
+echo "Starting main loop"
+echo "  OpenGL version: ", cast[cstring](glGetString(GL_VERSION))
+echo "  OpenGL shader version: ", cast[cstring](glGetString(GL_SHADING_LANGUAGE_VERSION))
+
 window.onResize = proc() =
   let size = window.size
   echo "resize: ", size.x, "x", size.y
