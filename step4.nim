@@ -1,10 +1,9 @@
-import boxy, windy
+import boxy, windy, opengl
 
 let window = newWindow("Step 4", ivec2(1280, 800))
 makeContextCurrent(window)
 
 when not defined(emscripten):
-  import opengl
   loadExtensions()
 
 let bxy = newBoxy()
@@ -19,13 +18,15 @@ var frame: int
 
 # Called when it is time to draw a new frame.
 window.onFrame = proc() =
+  # Test if OpenGL is working - set a red clear color
+
   # Clear the screen and begin a new frame.
   bxy.beginFrame(window.size)
 
   # Draw the bg.
   bxy.drawImage("bg", rect = rect(vec2(0, 0), window.size.vec2))
 
-  # Draw the rings.
+  # # Draw the rings.
   let center = window.size.vec2 / 2
   bxy.drawImage("ring1", center, angle = frame.float / 100)
   bxy.drawImage("ring2", center, angle = -frame.float / 190)
@@ -35,6 +36,7 @@ window.onFrame = proc() =
   bxy.endFrame()
   # Swap buffers displaying the new Boxy frame.
   window.swapBuffers()
+
   inc frame
 
 proc mainLoop() {.cdecl.} =
