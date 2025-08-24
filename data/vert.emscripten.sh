@@ -1,8 +1,8 @@
-#version 150
+precision mediump float;
 uniform mat4 MVP;
-in vec3 vCol;
-in vec2 vPos;
-out vec3 color;
+attribute vec3 vCol;
+attribute vec2 vPos;
+varying vec3 color;
 void main()
 {
     gl_Position = MVP * vec4(vPos, 0.0, 1.0);
