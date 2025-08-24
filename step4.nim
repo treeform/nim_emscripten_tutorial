@@ -1,9 +1,10 @@
-import boxy, windy, opengl
+import boxy, windy
 
 let window = newWindow("Step 4", ivec2(1280, 800))
 makeContextCurrent(window)
 
 when not defined(emscripten):
+  import opengl
   loadExtensions()
 
 let bxy = newBoxy()
@@ -38,6 +39,46 @@ window.onFrame = proc() =
   window.swapBuffers()
 
   inc frame
+
+window.onCloseRequest = proc() =
+  echo "Emscripten: window's can't be closed"
+
+window.onMove = proc() =
+  echo "Emscripten: window's can't be moved"
+
+window.onResize = proc() =
+  echo "onResize ", window.size, " content scale = ", window.contentScale
+  if window.minimized:
+    echo "Emscripten: window's can't be minimized"
+  if window.maximized:
+    echo "Emscripten: window's can't be maximized"
+
+window.onFocusChange = proc() =
+  echo "onFocusChange ", window.focused
+
+window.onMouseMove = proc() =
+  echo "onMouseMove from ",
+    window.mousePrevPos, " to ", window.mousePos, " delta = ", window.mouseDelta
+
+window.onScroll = proc() =
+  echo "onScroll ", window.scrollDelta
+
+window.onButtonPress = proc(button: Button) =
+  echo "onButtonPress ", button
+  echo "down: ", window.buttonDown[button]
+  echo "pressed: ", window.buttonPressed[button]
+  echo "released: ", window.buttonReleased[button]
+  echo "toggle: ", window.buttonToggle[button]
+
+window.onButtonRelease = proc(button: Button) =
+  echo "onButtonRelease ", button
+  echo "down: ", window.buttonDown[button]
+  echo "pressed: ", window.buttonPressed[button]
+  echo "released: ", window.buttonReleased[button]
+  echo "toggle: ", window.buttonToggle[button]
+
+window.onRune = proc(rune: Rune) =
+  echo "onRune ", rune
 
 proc mainLoop() {.cdecl.} =
   pollEvents()
