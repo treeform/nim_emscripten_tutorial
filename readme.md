@@ -72,21 +72,16 @@ Now inside of the tutorial folder, lets compile a basic C program to make sure i
 emcc step0.c -o step0.html
 ```
 
-To view the files we need to run a webserver. The easiest one to run is the `nimhttpd`:
+To view the files we need to run a webserver. The easiest one to run is the python simple server:
 
-To install:
 ```sh
-nimble install nimhttpd
+python -m http.server 8000
 ```
 
-To serve files, open a new shell window, move to the nim_emscripten_tutorial and run the webserver:
-```sh
-nimhttpd -p:8000
-```
-
-If compiling with threads then you need extra headers when serving the files (See [here for details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements))
-```sh
-nimhttpd -H:"Cross-Origin-Opener-Policy: same-origin" -H:"Cross-Origin-Embedder-Policy: require-corp"
+Note: If compiling with threads then you need extra headers when serving the files (See [here for details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements))
+```http
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
 ```
 
 Next, open a browser to the step0 page: http://localhost:8000/step0.html
@@ -215,3 +210,27 @@ nim c -d:emscripten step3.nim
 And see it run: http://localhost:8000/step3.html
 
 ![step3a](imgs/step3b.png)
+
+
+### Step 4: Nim with Windy and Boxy.
+
+The [step4.nim](step4.nim) is a simple example of using Windy and Boxy to draw a simple with rotating circles on a gradient background.
+
+First lets run it natively:
+
+```sh
+nim r step4.nim
+```
+
+![step4a](imgs/step4a.png)
+
+```sh
+nim c -d:emscripten step4.nim
+```
+
+And see it run: http://localhost:8000/step4.html
+
+![step4b](imgs/step4b.png)
+
+Boxy is a powerful library for drawing graphics in the browser.
+They can load many image formats, have layering, masking, blending, and can even render fonts!
