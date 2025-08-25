@@ -1,4 +1,7 @@
+import strutils
+
 if defined(emscripten):
+
   # This path will only run if -d:emscripten is passed to nim.
 
   --nimcache:tmp # Store intermediate files close by in the ./tmp dir.
@@ -23,4 +26,22 @@ if defined(emscripten):
   --define:noSignalHandler # Emscripten doesn't support signal handlers.
 
   # Pass this to Emscripten linker to generate html file scaffold for us.
-  switch("passL", "-o step4.html --preload-file data --shell-file shell_minimal.html")
+  switch(
+    "passL",
+    """
+    -o step4.html
+    --preload-file data
+    --shell-file shell_minimal.html
+    -s USE_WEBGL2=1
+    -s MAX_WEBGL_VERSION=2
+    -s MIN_WEBGL_VERSION=1
+    -s FULL_ES3=1
+    -s GL_ENABLE_GET_PROC_ADDRESS=1
+    -s ALLOW_MEMORY_GROWTH
+    """.replace("\n", " ")
+  )
+
+
+--gc:arc # GC:arc is friendlier with crazy platforms.
+--exceptions:goto # Goto exceptions are friendlier with crazy platforms.
+--define:noSignalHandler # Emscripten doesn't support signal handlers.

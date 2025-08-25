@@ -1,13 +1,7 @@
-import math, opengl, staticglfw
-
-proc emscripten_set_main_loop(f: proc() {.cdecl.}, a: cint, b: bool) {.importc.}
-
-# Init GLFW
-if init() == 0:
-  raise newException(Exception, "Failed to Initialize GLFW")
+import math, opengl, windy
 
 # Open window.
-var window = createWindow(800, 600, "GLFW3 WINDOW", nil, nil)
+var window = newWindow("Windy Window", ivec2(800, 600))
 # Connect the GL context.
 window.makeContextCurrent()
 
@@ -16,6 +10,11 @@ when not defined(emscripten):
   loadExtensions()
 
 var colorFade = 1.0
+
+echo "Starting Step 2!"
+echo "  OpenGL version: ", cast[cstring](glGetString(GL_VERSION))
+echo "  OpenGL shader version: ", cast[cstring](glGetString(GL_SHADING_LANGUAGE_VERSION))
+
 
 proc mainLoop() {.cdecl.} =
 
@@ -29,14 +28,11 @@ proc mainLoop() {.cdecl.} =
 
   # Check for events.
   pollEvents()
-  # If you get ESC key quit.
-  if window.getKey(KEY_ESCAPE) == 1:
-    window.setWindowShouldClose(1)
 
 when defined(emscripten):
   # Emscripten can't block so it will call this callback instead.
-  emscripten_set_main_loop(main_loop, 0, true);
+  window.run(mainLoop)
 else:
   # When running native code we can block in an infinite loop.
-  while windowShouldClose(window) == 0:
+  while not window.closeRequested:
     mainLoop()

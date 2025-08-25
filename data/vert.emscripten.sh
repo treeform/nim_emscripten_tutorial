@@ -1,4 +1,5 @@
-#version 410 core
+#version 300 es
+precision mediump float;
 uniform mat4 MVP;
 in vec3 vCol;
 in vec2 vPos;

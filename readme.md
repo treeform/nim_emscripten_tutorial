@@ -1,8 +1,10 @@
 ## Nim Emscripten Tutorial for Windows.
 
-### Step 0: Making sure Emscripten can compile C:
+### Installing Emscripten:
 
-Assumes Windows 10 64bit.
+Depends on which operating system you are using you are going to have to do different things to install emscripten.
+
+#### Windows.
 
 First, install Python if it is not already installed.
 
@@ -38,7 +40,25 @@ Lets install `emcc` - the actual compiler we will be using.
 cd ..
 ```
 
-After these commands run successfully (you should see some logs after each command), change directories into a clone of this repo and install the dependencies:
+#### Macos
+
+Mac is much easier. We can use brew to install emscripten.
+
+```sh
+brew install emscripten
+```
+
+#### Linux
+
+Linux is also easy. We can use apt to install emscripten.
+
+```sh
+sudo apt install emscripten
+```
+
+### Step 0: Making sure Emscripten can compile C:
+
+After the installation is complete, change directories into a clone of this repo and install the dependencies:
 
 ```sh
 git clone https://github.com/treeform/nim_emscripten_tutorial
@@ -52,21 +72,16 @@ Now inside of the tutorial folder, lets compile a basic C program to make sure i
 emcc step0.c -o step0.html
 ```
 
-To view the files we need to run a webserver. The easiest one to run is the `nimhttpd`:
+To view the files we need to run a webserver. The easiest one to run is the python simple server:
 
-To install:
 ```sh
-nimble install nimhttpd
+python -m http.server 8000
 ```
 
-To serve files, open a new shell window, move to the nim_emscripten_tutorial and run the webserver:
-```sh
-nimhttpd -p:8000
-```
-
-If compiling with threads then you need extra headers when serving the files (See [here for details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements))
-```sh
-nimhttpd -H:"Cross-Origin-Opener-Policy: same-origin" -H:"Cross-Origin-Embedder-Policy: require-corp"
+Note: If compiling with threads then you need extra headers when serving the files (See [here for details](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements))
+```http
+Cross-Origin-Opener-Policy: same-origin
+Cross-Origin-Embedder-Policy: require-corp
 ```
 
 Next, open a browser to the step0 page: http://localhost:8000/step0.html
@@ -131,7 +146,7 @@ if defined(emscripten):
 Lets compile it!
 
 ```sh
-nim c -d:emscripten .\step1.nim
+nim c -d:emscripten step1.nim
 ```
 
 Lets go to step1.html, this is how it should look: http://localhost:8000/step1.html
@@ -151,8 +166,10 @@ See: [step2.nim](step2.nim)
 First lets make sure it runs in normal native mode:
 
 ```sh
-nim c -r step2.nim
+nim r step2.nim
 ```
+
+Because native mode is faster to compile and more performant, I recommend developing in native mode and then compiling to the browser for compatibility.
 
 ![step2](imgs/step2a.png)
 
@@ -180,7 +197,7 @@ The [step3.nim](step3.nim) is more complex as it requires loading shaders and se
 
 Again see it run natively:
 ```sh
-nim c -r step3.nim
+nim r step3.nim
 ```
 
 ![step3b](imgs/step3a.png)
@@ -193,3 +210,27 @@ nim c -d:emscripten step3.nim
 And see it run: http://localhost:8000/step3.html
 
 ![step3a](imgs/step3b.png)
+
+
+### Step 4: Nim with Windy and Boxy.
+
+The [step4.nim](step4.nim) is a simple example of using Windy and Boxy to draw a simple with rotating circles on a gradient background.
+
+First lets run it natively:
+
+```sh
+nim r step4.nim
+```
+
+![step4a](imgs/step4a.png)
+
+```sh
+nim c -d:emscripten step4.nim
+```
+
+And see it run: http://localhost:8000/step4.html
+
+![step4b](imgs/step4b.png)
+
+Boxy is a powerful library for drawing graphics in the browser.
+They can load many image formats, have layering, masking, blending, and can even render fonts!

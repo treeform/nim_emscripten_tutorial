@@ -1,6 +1,4 @@
-import vmath, opengl, staticglfw
-
-proc emscripten_set_main_loop(f: proc() {.cdecl.}, a: cint, b: bool) {.importc.}
+import vmath, opengl, windy
 
 var
   vertices: seq[float32] = @[
@@ -8,8 +6,15 @@ var
     +0.6f, -0.4f, 0.0f, 1.0f, 0.0f,
     +0.0f, +0.6f, 0.0f, 0.0f, 1.0f
   ]
-  vertexShaderText = readFile("data/vert.sh")
-  fragmentShaderText = readFile("data/frag.sh")
+
+when defined(emscripten):
+  var
+    vertexShaderText = readFile("data/vert.emscripten.sh")
+    fragmentShaderText = readFile("data/frag.emscripten.sh")
+else:
+  var
+    vertexShaderText = readFile("data/vert.sh")
+    fragmentShaderText = readFile("data/frag.sh")
 
 proc checkError*(shader: GLuint) =
   var code: GLint
@@ -18,17 +23,11 @@ proc checkError*(shader: GLuint) =
     var length: GLint = 0
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, addr length)
     var log = newString(length.int)
-    glGetShaderInfoLog(shader, length, nil, log);
+    glGetShaderInfoLog(shader, length, nil, log.cstring);
     echo log
-  else:
-    echo "pass"
-
-# Init GLFW
-if init() == 0:
-  raise newException(Exception, "Failed to Initialize GLFW")
 
 # Open window.
-var window = createWindow(800, 600, "GLFW3 WINDOW", nil, nil)
+var window = newWindow("GLFW3 WINDOW", ivec2(800, 600))
 # Connect the GL context.
 window.makeContextCurrent()
 
@@ -36,22 +35,28 @@ when not defined(emscripten):
   # This must be called to make any GL function work
   loadExtensions()
 
+# Create and bind VAO for macOS/desktop OpenGL Core Profile
+var vao: GLuint
+when not defined(emscripten):
+  glGenVertexArrays(1, addr vao)
+  glBindVertexArray(vao)
+
 var vertexBuffer: GLuint
 glGenBuffers(1, addr vertexBuffer)
-glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer)
+glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer)
 glBufferData(GL_ARRAY_BUFFER, vertices.len * 5 * 4, addr vertices[0], GL_STATIC_DRAW)
 
 var vertexShader = glCreateShader(GL_VERTEX_SHADER)
 var vertexShaderTextArr = allocCStringArray([vertexShaderText])
 glShaderSource(vertexShader, 1.GLsizei, vertexShaderTextArr, nil)
-glCompileShader(vertex_shader)
+glCompileShader(vertexShader)
 checkError(vertexShader)
 
 var fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 var fragmentShaderTextArr = allocCStringArray([fragmentShaderText])
 glShaderSource(fragmentShader, 1.GLsizei, fragmentShaderTextArr, nil);
 glCompileShader(fragmentShader)
-checkError(fragment_shader)
+checkError(fragmentShader)
 
 var program = glCreateProgram()
 glAttachShader(program, vertexShader)
@@ -61,8 +66,7 @@ var
   mvpLocation = glGetUniformLocation(program, "MVP").GLuint
   vposLocation = glGetAttribLocation(program, "vPos").GLuint
   vcolLocation = glGetAttribLocation(program, "vCol").GLuint
-echo mvpLocation
-echo vposLocation
+
 #echo vcolLocation
 glEnableVertexAttribArray(vposLocation);
 glVertexAttribPointer(vposLocation, 2.GLint, cGL_FLOAT, GL_FALSE, (5 * 4).GLsizei, nil)
@@ -70,16 +74,22 @@ glEnableVertexAttribArray(vcolLocation.GLuint);
 glVertexAttribPointer(vcolLocation, 3.GLint, cGL_FLOAT, GL_FALSE, (5 * 4).GLsizei, cast[pointer](4*2))
 
 var colorFade = 1.0
+var rotationAngle = 0.0f
 
-proc onResize(handle: staticglfw.Window, w, h: int32) {.cdecl.} =
-  echo "resize: ", w, "x", h
-discard window.setFramebufferSizeCallback(onResize)
+echo "Starting Step 3!"
+echo "  OpenGL version: ", cast[cstring](glGetString(GL_VERSION))
+echo "  OpenGL shader version: ", cast[cstring](glGetString(GL_SHADING_LANGUAGE_VERSION))
+
+window.onResize = proc() =
+  let size = window.size
+  echo "resize: ", size.x, "x", size.y
 
 proc mainLoop() {.cdecl.} =
   var ratio: float32
-  var width, height: cint
   var m, p, mvp: Mat4
-  getFramebufferSize(window, addr width, addr height)
+  let fbSize = window.size
+  let width = fbSize.x.cint
+  let height = fbSize.y.cint
   ratio = width.float32 / height.float32
   glViewport(0, 0, width, height)
   var a = sin(colorFade)*0.2 + 0.20
@@ -87,7 +97,8 @@ proc mainLoop() {.cdecl.} =
   colorFade += 0.01
   glClear(GL_COLOR_BUFFER_BIT)
 
-  m = rotateZ(getTime().float32)
+  rotationAngle += 0.02f
+  m = rotateZ(rotationAngle)
   p = ortho[float32](-1, 1, 1, -1, -1000, 1000)
   mvp = m * p;
 
@@ -104,11 +115,8 @@ proc mainLoop() {.cdecl.} =
 
 when defined(emscripten):
   # Emscripten can't block so it will call this callback instead.
-  emscripten_set_main_loop(main_loop, 0, true);
+  window.run(mainLoop)
 else:
   # When running native code we can block in an infinite loop.
-  while windowShouldClose(window) == 0:
+  while not window.closeRequested:
     mainLoop()
-    # If you get ESC key quit.
-    if window.getKey(KEY_ESCAPE) == 1:
-      window.setWindowShouldClose(1)
