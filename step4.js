@@ -46,7 +46,7 @@ if (ENVIRONMENT_IS_NODE) {
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp6q8gages.js
+// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpeuw70axp.js
 Module["expectedDataFileDownloads"] ??= 0;
 
 Module["expectedDataFileDownloads"]++;
@@ -242,23 +242,23 @@ Module["expectedDataFileDownloads"]++;
   });
 })();
 
-// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp6q8gages.js
-// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpvmi5kjn9.js
+// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpeuw70axp.js
+// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpixzgsxiw.js
 // All the pre-js content up to here must remain later on, we need to run
 // it.
 if ((typeof ENVIRONMENT_IS_WASM_WORKER != "undefined" && ENVIRONMENT_IS_WASM_WORKER) || (typeof ENVIRONMENT_IS_PTHREAD != "undefined" && ENVIRONMENT_IS_PTHREAD) || (typeof ENVIRONMENT_IS_AUDIO_WORKLET != "undefined" && ENVIRONMENT_IS_AUDIO_WORKLET)) Module["preRun"] = [];
 
 var necessaryPreJSTasks = Module["preRun"].slice();
 
-// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpvmi5kjn9.js
-// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp9krvgb6o.js
+// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmpixzgsxiw.js
+// include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmppxmt8efz.js
 if (!Module["preRun"]) throw "Module.preRun should exist because file support used it; did a pre-js delete it?";
 
 necessaryPreJSTasks.forEach(task => {
   if (Module["preRun"].indexOf(task) < 0) throw "All preRun tasks that exist before user pre-js code should remain after; did you replace Module or modify Module.preRun?";
 });
 
-// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmp9krvgb6o.js
+// end include: /var/folders/nh/hbz5f40j1nb0m6t1hnbbz8q40000gn/T/tmppxmt8efz.js
 var arguments_ = [];
 
 var thisProgram = "./this.program";
@@ -7141,6 +7141,8 @@ function assignWasmImports() {
     /** @export */ _emscripten_thread_set_strongref: __emscripten_thread_set_strongref,
     /** @export */ _mmap_js: __mmap_js,
     /** @export */ _munmap_js: __munmap_js,
+    /** @export */ canvas_get_height,
+    /** @export */ canvas_get_width,
     /** @export */ clock_time_get: _clock_time_get,
     /** @export */ emscripten_check_blocking_allowed: _emscripten_check_blocking_allowed,
     /** @export */ emscripten_exit_with_live_runtime: _emscripten_exit_with_live_runtime,
